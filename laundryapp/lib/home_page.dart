@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.only(
                 left: 20.0), // Add padding to the left side
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
                   fontSize: 24, fontWeight: FontWeight.bold), // Add styling
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -57,6 +57,9 @@ class HomePage extends StatelessWidget {
                           Color.fromARGB(255, 255, 112,
                               200), // Color for the customer button area
                         ),
+                        fixedSize: MaterialStateProperty.all<Size>(
+                            Size(150, 180), // Set fixed width and height
+                          ),
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                           EdgeInsets.symmetric(
                               vertical: 20,
@@ -105,6 +108,9 @@ class HomePage extends StatelessWidget {
                           Color.fromARGB(255, 111, 135,
                               255), // Color for the laundry owner button area
                         ),
+                        fixedSize: MaterialStateProperty.all<Size>(
+                            Size(150, 180), // Set fixed width and height
+                          ),
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                           EdgeInsets.symmetric(
                               vertical: 20,

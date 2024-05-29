@@ -19,6 +19,7 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   void _showSignUpOptions() {
     Navigator.of(context).pushNamed(widget.isLaundryOwner ? '/signUpOwner' : '/signUpCustomer');
@@ -42,18 +43,14 @@ class _SignInPageState extends State<SignInPage> {
         if ((widget.isLaundryOwner && userLogin.isLaundryShopOwner) ||
             (!widget.isLaundryOwner && !userLogin.isLaundryShopOwner)) {
           Navigator.of(context).pushNamedAndRemoveUntil(widget.isLaundryOwner ? '/ownerHome' : '/customerHome', (route) => false);
-        }
-
-        else {
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('You might be trying to log in from the wrong page.')));
           await FirebaseAuth.instance.signOut();
           setState(() {
             _isLoading = false;
           });
         }
-      }
-
-      on FirebaseAuthException catch (e) {
+      } on FirebaseAuthException catch (e) {
         print('Error signing in: $e');
         setState(() {
           _isLoading = false;
@@ -61,9 +58,7 @@ class _SignInPageState extends State<SignInPage> {
         if (e.code == 'invalid-credential') {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('The information you entered is incorrect!')));
         }
-      }
-
-      catch (e) {
+      } catch (e) {
         print('Error signing in: $e');
         setState(() {
           _isLoading = false;
@@ -77,49 +72,107 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isLaundryOwner ? 'Laundry Owner Sign In' : 'Customer Sign In'),
+        backgroundColor: Colors.indigo,
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome Back!',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.indigo,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Please sign in to your account',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: !_isPasswordVisible,
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _signIn,
+                        child: const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          alignment: Alignment.center,
+                          backgroundColor: Colors.indigo,
+                          padding: EdgeInsets.symmetric(horizontal: 70, vertical: 20),
+                          textStyle: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: TextButton(
+                        onPressed: _showSignUpOptions,
+                        child: Text(
+                          'Don\'t have an account? Sign Up',
+                          style: TextStyle(color: Colors.indigo),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signIn,
-                child: Text('Sign In'),
-              ),
-              TextButton(
-                onPressed: _showSignUpOptions,
-                child: Text('Sign Up'),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
