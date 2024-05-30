@@ -31,18 +31,18 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          final shops = snapshot.data!.docs;
-          if (shops.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(child: Text('No laundry shops found.'));
           }
+          final shops = snapshot.data!.docs;
           return ListView.builder(
             itemCount: shops.length,
             itemBuilder: (context, index) {
               final shop = shops[index];
               return ListTile(
-                title: Text(shop['name']),
+                title: Text(shop['storeName']),
                 subtitle: Text(shop['address']),
-                trailing: Text('Capacity: ${shop['capacity']}'),
+                trailing: Text('Contact: ${shop['contactNumber']}'),
                 onTap: () {
                   // Navigate to a detailed page
                 },

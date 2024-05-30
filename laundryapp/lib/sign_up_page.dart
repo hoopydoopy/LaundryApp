@@ -1,4 +1,3 @@
-import 'models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,55 +16,65 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _contactNumberController =
-      TextEditingController();
-  final TextEditingController _storeNameController =
-      TextEditingController(); // Add this
-  final TextEditingController _addressController =
-      TextEditingController(); // Add this
+  final TextEditingController _contactNumberController = TextEditingController();
+  final TextEditingController _storeNameController = TextEditingController(); // Add this
+  final TextEditingController _addressController = TextEditingController(); // Add this
   bool _isLoading = false;
 
   void _signUp() async {
-  if (_formKey.currentState?.validate() ?? false) {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
-        'name': _nameController.text.trim(),
-        'email': _emailController.text.trim(),
-        'contactNumber': _contactNumberController.text.trim(),
-        'storeName': _storeNameController.text.trim(),
-        'address': _addressController.text.trim(),
-        'createdAt': Timestamp.now(),
-        'isLaundryShopOwner': widget.isLaundryOwner,
-      });
-
-      Navigator.of(context).pushNamedAndRemoveUntil(widget.isLaundryOwner ? '/ownerHome' : '/customerHome', (route) => false);
-    } catch (error) {
-      print('Error signing up: $error');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error signing up: $error')));
-    } finally {
+    if (_formKey.currentState?.validate() ?? false) {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
+
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        if (widget.isLaundryOwner) {
+          // Save laundry shop owner data to 'laundryShops' collection
+          await FirebaseFirestore.instance.collection('laundryShops').doc(userCredential.user!.uid).set({
+            'name': _nameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'contactNumber': _contactNumberController.text.trim(),
+            'storeName': _storeNameController.text.trim(),
+            'address': _addressController.text.trim(),
+            'createdAt': Timestamp.now(),
+            'isLaundryShopOwner': widget.isLaundryOwner,
+          });
+        } else {
+          // Save customer data to 'users' collection
+          await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+            'name': _nameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'contactNumber': _contactNumberController.text.trim(),
+            'createdAt': Timestamp.now(),
+            'isLaundryShopOwner': widget.isLaundryOwner,
+          });
+        }
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          widget.isLaundryOwner ? '/ownerHome' : '/customerHome',
+          (route) => false,
+        );
+      } catch (error) {
+        print('Error signing up: $error');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error signing up: $error')));
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isLaundryOwner
-            ? 'Laundry Owner Sign Up'
-            : 'Customer Sign Up'),
+        title: Text(widget.isLaundryOwner ? 'Laundry Owner Sign Up' : 'Customer Sign Up'),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -93,9 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
                             return 'Please enter your email';
-                          } else if (!RegExp(
-                                  r'^\w+[\+\.\w-]*@([\w-]+\.)*\w+[\w-]*\.([a-z]{2,4}|\d+)$')
-                              .hasMatch(value!)) {
+                          } else if (!RegExp(r'^\w+[\+\.\w-]*@([\w-]+\.)*\w+[\w-]*\.([a-z]{2,4}|\d+)$').hasMatch(value!)) {
                             return 'Please enter a valid email address';
                           } // reg ex for email
                           return null;
@@ -103,8 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       TextFormField(
                         controller: _contactNumberController,
-                        decoration:
-                            InputDecoration(labelText: 'Contact Number'),
+                        decoration: InputDecoration(labelText: 'Contact Number'),
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
                             return 'Please enter your contact number';
@@ -112,14 +118,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      if (widget
-                          .isLaundryOwner) // Show store name and address fields only for laundry owners
+                      if (widget.isLaundryOwner) // Show store name and address fields only for laundry owners
                         Column(
                           children: [
                             TextFormField(
                               controller: _storeNameController,
-                              decoration:
-                                  InputDecoration(labelText: 'Store Name'),
+                              decoration: InputDecoration(labelText: 'Store Name'),
                               validator: (value) {
                                 if (value?.isEmpty ?? true) {
                                   return 'Please enter your store name';

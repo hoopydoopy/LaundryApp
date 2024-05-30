@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'sign_in_page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -50,7 +51,12 @@ class HomePage extends StatelessWidget {
                         20.0), // Add padding around the button
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/signInCustomer');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignInPage(isLaundryOwner: false),
+                          ),
+                        );
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
@@ -98,7 +104,12 @@ class HomePage extends StatelessWidget {
                         20.0), // Add padding around the button
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/signInOwner');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignInPage(isLaundryOwner: true),
+                          ),
+                        );
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(

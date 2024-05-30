@@ -15,7 +15,7 @@ class _LaundryOwnerHomePageState extends State<LaundryOwnerHomePage> {
   String _selectedEndHour = '5';
   String _selectedEndMinute = '00';
   String _selectedEndPeriod = 'PM';
-  List<String> _selectedOperatingDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // Default operating days
+  List<String> _selectedOperatingDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   @override
   void initState() {
