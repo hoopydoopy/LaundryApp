@@ -1,9 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class LaundryDetails extends StatelessWidget {
   final Map<String, dynamic> laundry;
 
   LaundryDetails({required this.laundry});
+
+Future<void> _fetchLaundry() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        setState(() {
+          username = userDoc['name'];
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching user name: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
