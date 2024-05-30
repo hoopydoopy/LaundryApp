@@ -93,14 +93,14 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
                     'Welcome, ${username ?? 'User'}!',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -111,7 +111,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Search Laundry Shops',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -124,32 +124,35 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   ),
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      mainAxisExtent: 265,
-                    ),
+  child: GridView.builder(
+    padding: const EdgeInsets.all(16),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      mainAxisExtent: 180, // Adjust the height of each box
+    ),
+    itemCount: laundries.length,
+    itemBuilder: (context, index) {
+      var laundry = laundries[index];
+      return Container(
+        width: MediaQuery.of(context).size.width * 0.4, // Adjust the width of each box
+        height: 180, // Adjust the height of each box
+        child: ListTile(
+          title: Text(laundry['name']),
+          subtitle: Text('Capacity: ${laundry['capacity']}'),
+          trailing: laundry['pickup']
+              ? const Text('Pickup Available')
+              : const Text('Drop-off Only'),
+          onTap: () {
+            // Navigate to a detailed page
+          },
+        ),
+      );
+    },
+  ),
+),
 
-                    itemCount: laundries.length,
-                    itemBuilder: (context, index) {
-                      var laundry = laundries[index];
-                      return ListTile(
-                        title: Text(laundry['name']),
-                        subtitle: Text('Capacity: ${laundry['capacity']}'),
-                        trailing: laundry['pickup']
-                            ? const Text('Pickup Available')
-                            : const Text('Drop-off Only'),
-                        onTap: () {
-                          // Navigate to a detailed page
-                        },
-                      );
-                    },
-                    
-                  ),
-                ),
               ],
             ),
     );
