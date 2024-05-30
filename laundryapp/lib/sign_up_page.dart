@@ -42,10 +42,12 @@ class _SignUpPageState extends State<SignUpPage> {
         });
 
         Navigator.of(context).pushNamedAndRemoveUntil(widget.isLaundryOwner ? '/ownerHome' : '/customerHome', (route) => false);
-      } catch (error) {
+      }
+      catch (error) {
         print('Error signing up: $error');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error signing up')));
-      } finally {
+      }
+      finally {
         setState(() {
           _isLoading = false;
         });

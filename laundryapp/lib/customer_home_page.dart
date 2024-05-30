@@ -143,6 +143,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                             ? const Text('Pickup Available')
                             : const Text('Drop-off Only'),
                         onTap: () {
+                          LaundryDetails();
                           // Navigate to a detailed page
                         },
                       );
